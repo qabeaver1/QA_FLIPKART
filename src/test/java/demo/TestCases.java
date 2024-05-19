@@ -42,6 +42,7 @@ public class TestCases  {
 
     public void testSearch_01() throws InterruptedException {
 
+        try {
         System.out.println("Start Test case: Search for Washing Machine and print items with <=4 star ratings");
 
         // Go to www.flipkart.com
@@ -81,6 +82,11 @@ public class TestCases  {
         Assert.assertTrue(count > 0, "No items found with rating <= 4 stars");
 
         System.out.println("End Test case: Printed the count successfully");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("Test case failed due to exception: " + e.getMessage());
+        }       
 
     }
 
@@ -88,6 +94,8 @@ public class TestCases  {
 
     public void testSearch_02() throws InterruptedException {
 
+        try {
+            
         System.out.println("Start Test case: Search for iPhone print the titles and discount % > than 17%");
 
         //be in the search page of flipkart
@@ -140,86 +148,98 @@ public class TestCases  {
         Assert.assertTrue(itemFound, "No items found with a discount greater than 17%");
 
         System.out.println("End Test case: Printed the titles and discounts successfully");
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("Test case failed due to exception: " + e.getMessage());
+        }
 
     }
 
     @Test(priority = 3, enabled = true)
 
     public void testSearch_03() throws InterruptedException {
-        System.out.println("Start Test case: Search for 'Coffee Mug' and print top 5 items Titles and ImageURLs ");
+        try {
+            System.out.println("Start Test case: Search for 'Coffee Mug' and print top 5 items Titles and ImageURLs ");
 
-        driver.get("https://www.flipkart.com/search?");
-        Thread.sleep(4000);
-
-        // search for 'Coffee Mug'
-        WebElement searchBox = driver.findElement(By.xpath("//input[@class='zDPmFV']"));
-        utility.click(searchBox);
-        utility.sendKeys(searchBox, "Coffee Mug");
-
-        WebElement searchButton = driver.findElement(By.xpath("//button[@type='submit']"));
-        utility.click(searchButton);
-
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.scrollBy(0,300);");
-        Thread.sleep(2000); 
-
-        // click on 4star rating checkbox
-        WebElement checkBox_4star = driver.findElement(By.xpath("(//div[@class='XqNaEv'])[1]"));
-        utility.click(checkBox_4star);
-
-        // Get the titles of the Coffee Mugs
-        List<WebElement> titles_InAPage = driver
-                .findElements(By.xpath("(//a[@class='wjcEIp'])"));
-
-        // Get the image URLs of the Coffee Mugs
-        List<WebElement> imgURLs = driver.findElements(By.xpath("//div[@class='_4WELSP']//img"));
-
-        // Get the review counts of the Coffee Mugs
-        List<WebElement> reviewCounts = driver.findElements(By.xpath("//span[@class='Wphh3N']"));
-
-        HashMap<Integer, MapInputs> coffeeMug_Map = new HashMap<>();
-
-        int minSize = Math.min(titles_InAPage.size(), Math.min(imgURLs.size(), reviewCounts.size()));
-
-        // Combine titles, image URLs, and review counts
-        for (int j = 0; j < minSize; j++) {
-            String title = titles_InAPage.get(j).getText();
-            String imgURL = imgURLs.get(j).getAttribute("src");
-            String reviewCount = reviewCounts.get(j).getText();
-
-            StringBuilder sb = new StringBuilder();
-            for (char c : reviewCount.toCharArray()) {
-                if (Character.isDigit(c)) {
-                    sb.append(c);
+            driver.get("https://www.flipkart.com/search?");
+            Thread.sleep(4000);
+    
+            // search for 'Coffee Mug'
+            WebElement searchBox = driver.findElement(By.xpath("//input[@class='zDPmFV']"));
+            utility.click(searchBox);
+            utility.sendKeys(searchBox, "Coffee Mug");
+    
+            WebElement searchButton = driver.findElement(By.xpath("//button[@type='submit']"));
+            utility.click(searchButton);
+    
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            js.executeScript("window.scrollBy(0,300);");
+            Thread.sleep(2000); 
+    
+            // click on 4star rating checkbox
+            WebElement checkBox_4star = driver.findElement(By.xpath("(//div[@class='XqNaEv'])[1]"));
+            utility.click(checkBox_4star);
+    
+            // Get the titles of the Coffee Mugs
+            List<WebElement> titles_InAPage = driver
+                    .findElements(By.xpath("(//a[@class='wjcEIp'])"));
+    
+            // Get the image URLs of the Coffee Mugs
+            List<WebElement> imgURLs = driver.findElements(By.xpath("//div[@class='_4WELSP']//img"));
+    
+            // Get the review counts of the Coffee Mugs
+            List<WebElement> reviewCounts = driver.findElements(By.xpath("//span[@class='Wphh3N']"));
+    
+            HashMap<Integer, MapInputs> coffeeMug_Map = new HashMap<>();
+    
+            int minSize = Math.min(titles_InAPage.size(), Math.min(imgURLs.size(), reviewCounts.size()));
+    
+            // Combine titles, image URLs, and review counts
+            for (int j = 0; j < minSize; j++) {
+                String title = titles_InAPage.get(j).getText();
+                String imgURL = imgURLs.get(j).getAttribute("src");
+                String reviewCount = reviewCounts.get(j).getText();
+    
+                StringBuilder sb = new StringBuilder();
+                for (char c : reviewCount.toCharArray()) {
+                    if (Character.isDigit(c)) {
+                        sb.append(c);
+                    }
                 }
+                int reviewCount_Number = Integer.parseInt(sb.toString());
+    
+                // Create a CoffeeMug object and put it into the map
+                MapInputs coffeeMug = new MapInputs(title, imgURL, reviewCount_Number);
+                coffeeMug_Map.put(reviewCount_Number, coffeeMug);
             }
-            int reviewCount_Number = Integer.parseInt(sb.toString());
-
-            // Create a CoffeeMug object and put it into the map
-            MapInputs coffeeMug = new MapInputs(title, imgURL, reviewCount_Number);
-            coffeeMug_Map.put(reviewCount_Number, coffeeMug);
-        }
-
-        // Find the max 5 with the highest review counts
-        List<Integer> sortedReviewCounts = new ArrayList<>(coffeeMug_Map.keySet());
-        //sorting in descnding order
-        Collections.sort(sortedReviewCounts, Collections.reverseOrder());
-
-        System.out.println(" 5 Items with highest review counts:");
-        for (int i = 0; i < Math.min(5, sortedReviewCounts.size()); i++) {
-
-            int reviewCount = sortedReviewCounts.get(i);        
-
-            MapInputs coffeeMug = coffeeMug_Map.get(reviewCount);
+    
+            // Find the max 5 with the highest review counts
+            List<Integer> sortedReviewCounts = new ArrayList<>(coffeeMug_Map.keySet());
+            //sorting in descnding order
+            Collections.sort(sortedReviewCounts, Collections.reverseOrder());
+    
+            System.out.println(" 5 Items with highest review counts:");
+            for (int i = 0; i < Math.min(5, sortedReviewCounts.size()); i++) {
+    
+                int reviewCount = sortedReviewCounts.get(i);        
+    
+                MapInputs coffeeMug = coffeeMug_Map.get(reviewCount);
+                
+                System.out.println("Title: " + coffeeMug.getTitle());
+                System.out.println("Image URL: " + coffeeMug.getImgUrl());
+            }
+    
+            System.out.println("Total number of items : " + minSize);
+            Assert.assertTrue(minSize > 0, "No items found");
+    
+            System.out.println("End Test case: Printed the titles, image URLs, and review counts successfully");
             
-            System.out.println("Title: " + coffeeMug.getTitle());
-            System.out.println("Image URL: " + coffeeMug.getImgUrl());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Assert.fail("Test case failed due to exception: " + e.getMessage());
         }
-
-        System.out.println("Total number of items : " + minSize);
-        Assert.assertTrue(minSize > 0, "No items found");
-
-        System.out.println("End Test case: Printed the titles, image URLs, and review counts successfully");
+       
     }
 
     @AfterSuite(alwaysRun = true)
