@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="FLIPKART AUTOMATION suite">
+    <test name="Test Execution using TestNG">
+        <classes>
+            <class name="demo.TestCases">
+                <methods>
+                    <include name="testSearch_01" />
+                    <include name="testSearch_02" /> 
+                    <include name="testSearch_03" /> 
+                </methods>
+            </class>
+        </classes>    
+    </test>
+</suite>

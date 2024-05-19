@@ -28,6 +28,19 @@ dependencies {
     // https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-java
     implementation 'org.seleniumhq.selenium:selenium-java:4.14.0'
 
+    // https://mvnrepository.com/artifact/org.testng/testng
+    testImplementation group: 'org.testng', name: 'testng', version: '7.10.1'
+    
+
+}
+
+test{
+    useTestNG(){        
+        suites "src/test/resources/testng.xml"       
+    }
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
 }
 
 //task startScript(type:Exec) {
@@ -38,4 +51,4 @@ dependencies {
 
 //test.dependsOn startScript
 
-mainClassName = 'demo.App'
+//mainClassName = 'demo.App'
